@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<script src="webauthn.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script>
+function redirect(to) {
+	if (!to) {
+		let args = new URLSearchParams(location.search);
+		if (args.has('u')) {
+			to = args.get('u');
+		}
+	}
+	if (!to) {
+		to = 'profile';
+	}
+	window.location = to;
+}
+</script>
+</head>
+<body class="admin">
+<h1>{{ .Name }}</h1>
+<button onclick="location.href='/'">Back Home</button>
+<h2>Sign up</h2>
+<div>
+	<form method="post" action="register">
+		<input name="email" type="email" required placeholder="any email address" value="" /><br>
+		<input type="submit" value="Register"/>
+	</form>
+</div>
+<h2>Sign in</h2>
+<div>
+	<button onclick="webauthn()">Login</button>
+	<script>
+		async function webauthn() {
+			let wa = new WebAuthn();
+			try {
+				await wa.login();
+				alert('Successfully logged in.');
+				redirect();
+			} catch(e) {
+				if (e instanceof DOMException && e.name == "AbortError") {
+					console.log('已取消操作。');
+					return;
+				}
+				alert(e);
+			}
+		}
+	</script>
+</div>
+</body>
+</html>

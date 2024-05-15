@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<script src="webauthn.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body>
+<div>
+	<p><b>ID:</b>{{ .User.ID }}</p>
+	<p><b>Email:</b>{{ .User.Email }}</p>
+	{{ if .PublicKeys }}
+	<p><b>PubKeys：</b></p>
+	<ul>
+		{{ range .PublicKeys }}
+		<li>{{ . }}</li>
+		{{ end}}
+	</ul>
+	{{ else }}
+		<p><b>PubKeys:</b>(none)</p>
+	{{ end }}
+	<p><button onclick="register()">Add WebAuthn Credential</button></p>
+</div>
+<div>
+	<p><button onclick="location.href='/'">Back Home</button></p>
+	<p><button onclick="location.href='logout'">Logout</button></p>
+</div>
+	
+</div>
+<script>
+async function register() {
+	let wa = new WebAuthn();
+	try {
+		await wa.register();
+		alert('Success. Refresh the page the see the Public Key list.');
+	} catch(e) {
+		if (e instanceof DOMException && e.name == "AbortError") {
+			console.log('已取消操作。');
+			return;
+		}
+		alert(e);
+	}
+}
+</script>
+</body>
+</html>
